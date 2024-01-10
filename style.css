@@ -11,7 +11,7 @@ body {
 }
 
 .bar {
-    width: 20px;
+    width: 18px;
     background-color: black;
     margin: 1px;
 }
@@ -19,6 +19,7 @@ body {
 #tester {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 #counters {

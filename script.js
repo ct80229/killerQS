@@ -1,10 +1,11 @@
-const size = 10;
-var delay = 50;
+var size = 10;
+var delay = document.getElementById("speed").value * -1;
 var nums = [];
 var copy;
 var restart;
 var numSwaps = 0;
 var numComparisons = 0;
+var sortType = "quicksort";
 createArr();
 const info = new Map();
 reset(info);
@@ -29,6 +30,15 @@ function createArr() {
     updateDisplay();
 }
 
+//sorts the bar graph
+function play() {
+    quicksort(nums, 0, size - 1);
+    //sets all to black
+    initStopwatch();
+    updateDisplay();
+    animate(animations);
+}
+
 //resets sort to original
 function restartSort() {
     nums = restart;
@@ -40,6 +50,11 @@ function restartSort() {
     document.getElementById('numberOfSwaps').innerHTML = "Number of Swaps: " + 0;
     document.getElementById('timer').innerHTML = "Time: 00:00:00"
     updateDisplay();
+}
+
+function getSortType() {
+    sortType = document.getElementById('types').value;
+    console.log(sortType);
 }
 
 //displays the bar graph to be sorted
@@ -71,15 +86,6 @@ function setColor(curColor, bar) {
     } else if (curColor == "green") {
         bar.style.backgroundColor = "green";
     }
-}
-
-//sorts the bar graph
-function play() {
-    quicksort(nums, 0, size - 1);
-    //sets all to black
-    initStopwatch();
-    updateDisplay();
-    animate(animations);
 }
 
 //standard quicksort, using hoare partitioning
@@ -178,62 +184,78 @@ function hoarePartition(nums, start, end) {
     }
 }
 
-    function animate(animations) {
-        if (animations.length == 0) {
-            endStopwatch();
-            return;
+function animate(animations) {
+    if (animations.length == 0) {
+        endStopwatch();
+        return;
+    }
+    const [index, colorOrNum] = animations.shift();
+    //if it's a index, color combo, then change info.
+    if (typeof colorOrNum === "string") {
+        info.set(index, colorOrNum);
+    } else if (typeof index === "string") {
+        if (index == "compare") {
+            document.getElementById('numberOfComparisons').innerHTML = "Number of Comparisons: " + colorOrNum;
+        } else if (index == "swap") {
+            document.getElementById('numberOfSwaps').innerHTML = "Number of Swaps: " + colorOrNum;
         }
-        const [index, colorOrNum] = animations.shift();
-        //if it's a index, color combo, then change info.
-        if (typeof colorOrNum === "string") {
-            info.set(index, colorOrNum);
-        } else if (typeof index === "string") {
-            if (index == "compare") {
-                document.getElementById('numberOfComparisons').innerHTML = "Number of Comparisons: " + colorOrNum;
-            } else if (index == "swap") {
-                document.getElementById('numberOfSwaps').innerHTML = "Number of Swaps: " + colorOrNum;
-            }
-        } else {
-            //swap 
-            let temp = copy[index];
-            copy[index] = copy[colorOrNum];
-            copy[colorOrNum] = temp;
-            reset(info);
-            updateDisplay();
-        }
-        updateDisplay(info);
-        setTimeout(function() {
-            animate(animations);
-        }, delay);
-        
+    } else {
+        //swap 
+        let temp = copy[index];
+        copy[index] = copy[colorOrNum];
+        copy[colorOrNum] = temp;
+        reset(info);
+        updateDisplay();
     }
+    updateDisplay(info);
+    setTimeout(function() {
+        animate(animations);
+    }, delay);
+    
+}
 
-    var startTime;
-    var interval;
+//create timer
+var startTime;
+var interval;
 
-    function displayHelper(number) {
-        // add a 0 if less than 10
-        return (number < 10 ? "0" : "") + number;
-    }
+function displayHelper(number) {
+    // add a 0 if less than 10
+    return (number < 10 ? "0" : "") + number;
+}
 
-    function initStopwatch() {
-        if (!interval) {
-            startTime = new Date().getTime();
-            interval = setInterval(stopwatch, 1); 
-          }
-    }
+function initStopwatch() {
+    if (!interval) {
+        startTime = new Date().getTime();
+        interval = setInterval(stopwatch, 1); 
+      }
+}
 
-    function stopwatch() {
-        var measuredTime = new Date().getTime() - startTime;
-        var minutes = Math.floor(measuredTime / 1000 / 60) % 60;
-        var seconds = Math.floor(measuredTime / 1000) % 60;
-        var milliseconds = Math.floor(measuredTime) % 60;
-        document.getElementById('timer').innerHTML = "Time: " + displayHelper(minutes) + ":" + displayHelper(seconds) + ":" + displayHelper(milliseconds);
-    }
+function stopwatch() {
+    var measuredTime = new Date().getTime() - startTime;
+    var minutes = Math.floor(measuredTime / 1000 / 60) % 60;
+    var seconds = Math.floor(measuredTime / 1000) % 60;
+    var milliseconds = Math.floor(measuredTime) % 60;
+    document.getElementById('timer').innerHTML = "Time: " + displayHelper(minutes) + ":" + displayHelper(seconds) + ":" + displayHelper(milliseconds);
+}
 
-    function endStopwatch() {
-        clearInterval(interval); 
-        interval = null;
-    }
+function endStopwatch() {
+    clearInterval(interval); 
+    interval = null;
+}
+
+function updateSpeed() {
+    delay = document.getElementById("speed").value * -1;
+    //console.log(document.getElementById("speed").value);
+    //console.log(delay);
+}
+
+function updateSize() {
+    size = document.getElementById("size").value ;
+    createArr();
+    console.log(document.getElementById("size").value);
+    console.log(size);
+}
+
+
 
     

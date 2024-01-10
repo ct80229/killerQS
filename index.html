@@ -11,9 +11,24 @@
     <hr>
 
     <div>
+        <select name="Sorts" id="types" onchange="getSortType()">
+            <option value="quicksort">Quick Sort</option>
+            <option value="selection">Selection Sort</option>
+            <option value="bubble">Bubble Sort</option>
+            <option value="merge">Merge Sort</option>
+          </select>
         <button onClick = "createArr()">Create</button>
         <button onClick = "play()">Start</button>
         <button onClick = "restartSort()">Reset</button>
+        <div class="slidecontainer">
+            <input type="range" min="1" max="50" value="10" class="slider" id="size"
+            onchange="updateSize()" oninput="updateSize()">
+          </div>
+
+          <div class="slidecontainer">
+            <input type="range" min="-300" max="-10" value="-50" class="slider" id="speed"
+            onchange="updateSpeed()" oninput="updateSpeed()">
+          </div>
     </div>
 
     <div id = "tester">
@@ -21,10 +36,6 @@
             <h1 id = "numberOfComparisons">Number of Comparisons: 0</h1>
             <h1 id = "numberOfSwaps">Number of Swaps: 0</h1>
             <h1 id = "timer">Time: 00:00:00</h1>
-        </div>
-        <div id = "sliders">
-            <h1 id = "numberOfComparisons">test</h1>
-            <h1 id = "numberOfSwaps">test</h1>
         </div>
     </div>
 

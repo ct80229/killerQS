@@ -16,3 +16,11 @@ body {
     margin: 1px;
 }
 
+#tester {
+    display: flex;
+    justify-content: center;
+}
+
+#counters {
+    margin-right: 50px;
+}

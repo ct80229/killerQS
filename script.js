@@ -38,6 +38,7 @@ function restartSort() {
     numComparisons = 0;
     document.getElementById('numberOfComparisons').innerHTML = "Number of Comparisons: " + 0;
     document.getElementById('numberOfSwaps').innerHTML = "Number of Swaps: " + 0;
+    document.getElementById('timer').innerHTML = "Time: 00:00:00"
     updateDisplay();
 }
 
@@ -76,6 +77,7 @@ function setColor(curColor, bar) {
 function play() {
     quicksort(nums, 0, size - 1);
     //sets all to black
+    initStopwatch();
     updateDisplay();
     animate(animations);
 }
@@ -178,6 +180,7 @@ function hoarePartition(nums, start, end) {
 
     function animate(animations) {
         if (animations.length == 0) {
+            endStopwatch();
             return;
         }
         const [index, colorOrNum] = animations.shift();
@@ -204,3 +207,33 @@ function hoarePartition(nums, start, end) {
         }, delay);
         
     }
+
+    var startTime;
+    var interval;
+
+    function displayHelper(number) {
+        // add a 0 if less than 10
+        return (number < 10 ? "0" : "") + number;
+    }
+
+    function initStopwatch() {
+        if (!interval) {
+            startTime = new Date().getTime();
+            interval = setInterval(stopwatch, 1); 
+          }
+    }
+
+    function stopwatch() {
+        var measuredTime = new Date().getTime() - startTime;
+        var minutes = Math.floor(measuredTime / 1000 / 60) % 60;
+        var seconds = Math.floor(measuredTime / 1000) % 60;
+        var milliseconds = Math.floor(measuredTime) % 60;
+        document.getElementById('timer').innerHTML = "Time: " + displayHelper(minutes) + ":" + displayHelper(seconds) + ":" + displayHelper(milliseconds);
+    }
+
+    function endStopwatch() {
+        clearInterval(interval); 
+        interval = null;
+    }
+
+    

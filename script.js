@@ -15,10 +15,9 @@ function reset(info) {
 
 //create bar graph to be sorted
 function createArr() {
-    /*for (let i = 0; i < size; i++) {
+    for (let i = 0; i < size; i++) {
         nums[i] = Math.random();
-    }*/
-    nums = [.98,.7,.8,.9,.6,.4,.5,.1,.3,.2];
+    }
     copy = [...nums]
     updateDisplay();
 }

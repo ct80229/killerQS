@@ -1,7 +1,10 @@
-const size = 20;
+const size = 10;
 var delay = 50;
 var nums = [];
 var copy;
+var restart;
+var numSwaps = 0;
+var numComparisons = 0;
 createArr();
 const info = new Map();
 reset(info);
@@ -16,10 +19,25 @@ function reset(info) {
 
 //create bar graph to be sorted
 function createArr() {
+    numSwaps = 0;
+    numComparisons = 0;
     for (let i = 0; i < size; i++) {
         nums[i] = Math.random();
     }
     copy = [...nums]
+    restart = [...nums]
+    updateDisplay();
+}
+
+//resets sort to original
+function restartSort() {
+    nums = restart;
+    copy = [...nums];
+    restart = [...nums];
+    numSwaps = 0;
+    numComparisons = 0;
+    document.getElementById('numberOfComparisons').innerHTML = "Number of Comparisons: " + 0;
+    document.getElementById('numberOfSwaps').innerHTML = "Number of Swaps: " + 0;
     updateDisplay();
 }
 
@@ -92,6 +110,8 @@ function hoarePartition(nums, start, end) {
                 animations.push([lPoint - 1, "black"]);
             }
             lPoint++;
+            numComparisons++;
+            animations.push(["compare", numComparisons]);
         }
         //left pointer stops. set to blue
         if (lPoint >= 0 && lPoint <= end) {
@@ -116,6 +136,8 @@ function hoarePartition(nums, start, end) {
                 animations.push([rPoint + 1, "black"]);
             }
             rPoint--;
+            numComparisons++;
+            animations.push(["compare", numComparisons]);
         }
         //rPoint stops. set to blue.
         if (rPoint >= 0 && rPoint <= end) {
@@ -136,6 +158,8 @@ function hoarePartition(nums, start, end) {
             nums[rPoint] = temp;
             info.set(start, "green");
             animations.push([start, "green"]);
+            numSwaps++;
+            animations.push(["swap", numSwaps]);
         } else {
             //swap pivot with rPoint, end condition
             animations.push([start, rPoint]);
@@ -143,6 +167,8 @@ function hoarePartition(nums, start, end) {
             nums[start] = nums[rPoint];
             nums[rPoint] = temp;
             reset(info);
+            numSwaps++;
+            animations.push(["swap", numSwaps]);
 
             //animate(animations);
             return rPoint;
@@ -158,6 +184,12 @@ function hoarePartition(nums, start, end) {
         //if it's a index, color combo, then change info.
         if (typeof colorOrNum === "string") {
             info.set(index, colorOrNum);
+        } else if (typeof index === "string") {
+            if (index == "compare") {
+                document.getElementById('numberOfComparisons').innerHTML = "Number of Comparisons: " + colorOrNum;
+            } else if (index == "swap") {
+                document.getElementById('numberOfSwaps').innerHTML = "Number of Swaps: " + colorOrNum;
+            }
         } else {
             //swap 
             let temp = copy[index];
@@ -170,8 +202,5 @@ function hoarePartition(nums, start, end) {
         setTimeout(function() {
             animate(animations);
         }, delay);
-        /*while(animations.length != 0) {
-            animate(animations);
-        }*/
         
     }

@@ -1,11 +1,13 @@
 const size = 10;
-const nums = [];
+var nums = [];
+var copy;
 createArr();
 const info = new Map();
-fillMap(info);
+reset(info);
+var animations = [];
 
 //sets base color to black for all bars
-function fillMap(info) {
+function reset(info) {
     for (i = 0; i < size; i++) {
         info.set(i, "black");
     }
@@ -13,9 +15,11 @@ function fillMap(info) {
 
 //create bar graph to be sorted
 function createArr() {
-    for (let i = 0; i < size; i++) {
+    /*for (let i = 0; i < size; i++) {
         nums[i] = Math.random();
-    }
+    }*/
+    nums = [.98,.7,.8,.9,.6,.4,.5,.1,.3,.2];
+    copy = [...nums]
     updateDisplay();
 }
 
@@ -24,7 +28,8 @@ function updateDisplay(info) {
     container.innerHTML = "";
     for (let i = 0; i < size; i++) {
         const bar = document.createElement("div");
-        bar.style.height = nums[i] * 100 + "%";
+        //bar.style.height = nums[i] * 100 + "%";
+        bar.style.height = copy[i] * 100 + "%";
         bar.classList.add("bar");
         //change color here 
         if (info) {
@@ -54,6 +59,7 @@ function play() {
     quicksort(nums, 0, 9);
     //sets all to black
     updateDisplay();
+    animate(animations);
 }
 
 //standard quicksort, using hoare partitioning
@@ -68,69 +74,81 @@ function quicksort(nums, start, end) {
 //choose leftmost as pivot. left pointer dislikes >=, right pointer dislikes <=
 function hoarePartition(nums, start, end) {
     let pivot = nums[start];
-    let lPoint = start - 1;
-    let rPoint = end + 1;
-    var animations = [];
+    let lPoint = start + 1;
+    let rPoint = end;
+    //var animations = [];
     animations.push([start, "green"]);
 
     while (true) {
-        do {
+        //move left pointer
+        while (lPoint <= end && nums[lPoint] < pivot) {
+            //change colors
+            //set current index to red. set prev (-1) to black if it's red.
+            info.set(lPoint, "red");
+            animations.push([lPoint, "red"]);
+            //if prev bar is in range, change to black
+            if (lPoint - 1 >= 0 && info.get(lPoint - 1) == "red") {
+                info.set(lPoint - 1, "black");
+                animations.push([lPoint - 1, "black"]);
+            }
             lPoint++;
-            //set current index bar to red. if prev is red, set to black
-            if (lPoint >= 0 && lPoint <= end) {
-                //change to red
-                animations.push([lPoint, "red"]);
-                //if prev bar is in range, change to black
-                if (lPoint - 1 >= 0 && info.get(lPoint) != "green") {
-                    animations.push([lPoint - 1, "black"]);
-                }
-                //updateDisplay(info);
-            }
-        } while (nums[lPoint] < pivot);
-        //once we get all animations for that movement, animate()? OR we can wait until end of entire partition and then animate
-
-        //set blue at lPoint
+        }
+        //left pointer stops. set to blue
         if (lPoint >= 0 && lPoint <= end) {
+            info.set(lPoint, "blue");
             animations.push([lPoint, "blue"]);
-            //updateDisplay(info);
+        }
+        //set behind to black if necessary.
+        if (lPoint - 1 >= 0 && info.get(lPoint - 1) == "red") {
+            info.set(lPoint - 1, "black");
+            animations.push([lPoint - 1, "black"]);
         }
 
-        do {
-            rPoint--;
+        //move right pointer
+        while (rPoint >= start && nums[rPoint] > pivot) {
+            //change colors
             //set current index to red. if prev(+1) is red, set to black
-            if (rPoint > 0 && rPoint <= end) {
-                animations.push([rPoint, "red"]);
-                //if prev bar is in range, change to black
-                if (rPoint + 1 <= end) {
-                    animations.push([rPoint + 1, "black"]);
-                }
-                //updateDisplay(info)
+            info.set(rPoint, "red");
+            animations.push([rPoint, "red"]);
+            //if prev bar is in range, change to black
+            if (rPoint + 1 <= end && info.get(rPoint + 1) == "red") {
+                info.set(rPoint + 1, "black");
+                animations.push([rPoint + 1, "black"]);
             }
-        } while (nums[rPoint] > pivot);
-        //set blue at rPoint
+            rPoint--;
+        }
+        //rPoint stops. set to blue.
         if (rPoint >= 0 && rPoint <= end) {
+            info.set(rPoint, "blue");
             animations.push([rPoint, "blue"]);
-            //updateDisplay(info);
+        }
+        //set previous to black if necessary.
+        if (rPoint + 1 <= end && info.get(rPoint + 1) == "red") {
+            info.set(rPoint + 1, "black");
+            animations.push([rPoint + 1, "black"]);
         }
 
-        if (lPoint >= rPoint) {
-            //set everything back to black
-            //updateDisplay();
-                animate(animations);
+        if (lPoint < rPoint) {
+            //swap, regular.
+            animations.push([lPoint, rPoint]);
+            let temp = nums[lPoint];
+            nums[lPoint] = nums[rPoint];
+            nums[rPoint] = temp;
+            info.set(start, "green");
+            animations.push([start, "green"]);
+        } else {
+            //swap pivot with rPoint, end condition
+            animations.push([start, rPoint]);
+            let temp = pivot;
+            nums[start] = nums[rPoint];
+            nums[rPoint] = temp;
+            reset(info);
+
+            //animate(animations);
             return rPoint;
         }
-        //swap
-        animations.push([lPoint, rPoint]);
-        let temp = nums[lPoint];
-        nums[lPoint] = nums[rPoint];
-        nums[rPoint] = temp;
-
-        //set start back to green again
-        if (info.get(start) != "green") {
-            animations.push([start, "green"]);
-            //updateDisplay(info);
-        }
     }
+}
 
     function animate(animations) {
         if (animations.length == 0) {
@@ -142,15 +160,18 @@ function hoarePartition(nums, start, end) {
             info.set(index, colorOrNum);
         } else {
             //swap 
-            let temp = nums[index];
-            nums[index] = nums[colorOrNum];
-            nums[colorOrNum] = temp;
+            let temp = copy[index];
+            copy[index] = copy[colorOrNum];
+            copy[colorOrNum] = temp;
+            reset(info);
+            updateDisplay();
         }
         updateDisplay(info);
         setTimeout(function() {
             animate(animations);
-        }, 100);
-
+        }, 300);
+        /*while(animations.length != 0) {
+            animate(animations);
+        }*/
         
     }
-}

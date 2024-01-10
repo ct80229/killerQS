@@ -1,4 +1,5 @@
-const size = 10;
+const size = 20;
+var delay = 50;
 var nums = [];
 var copy;
 createArr();
@@ -55,7 +56,7 @@ function setColor(curColor, bar) {
 
 //sorts the bar graph
 function play() {
-    quicksort(nums, 0, 9);
+    quicksort(nums, 0, size - 1);
     //sets all to black
     updateDisplay();
     animate(animations);
@@ -168,7 +169,7 @@ function hoarePartition(nums, start, end) {
         updateDisplay(info);
         setTimeout(function() {
             animate(animations);
-        }, 300);
+        }, delay);
         /*while(animations.length != 0) {
             animate(animations);
         }*/

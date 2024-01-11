@@ -33,6 +33,7 @@ function createArr() {
 //sorts the bar graph
 function play() {
     quicksort(nums, 0, size - 1);
+    //bubbleSort(nums, size);
     //sets all to black
     initStopwatch();
     updateDisplay();
@@ -184,6 +185,42 @@ function hoarePartition(nums, start, end) {
     }
 }
 
+//bubble sort. keep swapping until end of array. repeat, reducing length by 1 each time.
+function bubbleSort(nums, size) {
+    for (i = 0; i < size; i++) {
+        let swapped = false;
+        for (j = 0; j < size - i - 1; j++) {
+            //make j, j + 1st index red
+            animations.push([j, "red"]);
+            animations.push([j + 1, "red"]);
+            //add 1 comparison
+            numComparisons++;
+            animations.push(["compare", numComparisons]);
+            if (nums[j] > nums[j + 1]) {
+                //swap with larger element
+                let temp = nums[j];
+                nums[j] = nums[j + 1];
+                nums[j + 1] = temp;
+                swapped = true;
+                //turn both blue, then swap.
+                animations.push([j, "blue"]);
+                animations.push([j + 1, "blue"]);
+                animations.push([j, j + 1]);
+                //add 1 swap
+                numSwaps++;
+                animations.push(["swap", numSwaps]);
+            } else {
+                //turn j black.
+                animations.push([j, "black"]);
+            }
+        }
+        if (swapped == false) {
+            break;
+        }
+    }
+}
+
+//given a list of swaps [index, index], comparison/swaps [compare/swap, numberofcomp/swap] or color changes [index, color]
 function animate(animations) {
     if (animations.length == 0) {
         endStopwatch();
@@ -213,6 +250,7 @@ function animate(animations) {
     }, delay);
     
 }
+
 
 //create timer
 var startTime;

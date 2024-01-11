@@ -32,8 +32,9 @@ function createArr() {
 
 //sorts the bar graph
 function play() {
-    quicksort(nums, 0, size - 1);
+    //quicksort(nums, 0, size - 1);
     //bubbleSort(nums, size);
+    selectionSort(nums, size);
     //sets all to black
     initStopwatch();
     updateDisplay();
@@ -218,6 +219,56 @@ function bubbleSort(nums, size) {
             break;
         }
     }
+}
+
+//
+function selectionSort(nums, size) {
+    for (i = 0; i < size - 1; i++) {
+        //index to swap is i, iterate throughout
+        let minimumIndex = i;
+        //set minimumIndex to green
+        animations.push([minimumIndex, "green"]);
+        for (j = minimumIndex + 1; j < size; j++) {
+            //set j to red
+            if (info.get(j) != "red") {
+                info.set(j, "red");
+                animations.push([j, "red"]);
+            }
+            //set previous j to black, if applicable
+            if (j - 1 >= 0 && info.get(j - 1) == "red") {
+                info.set(j - 1, "black");
+                animations.push([j - 1, "black"]);
+            }
+            //add 1 comparison
+            numComparisons++;
+            animations.push(["compare", numComparisons]);
+            if (nums[minimumIndex] > nums[j]) {
+                //set both to blue
+                info.set(minimumIndex, "blue");
+                info.set(j, "blue");
+                animations.push([minimumIndex, "blue"]);
+                if (minimumIndex != j) {
+                    animations.push([j, "blue"]);
+                }
+                //set old minimum index to black
+                info.set(minimumIndex, "black");
+                animations.push([minimumIndex, "black"]);
+                minimumIndex = j;
+                //set new minimum index to green
+                info.set(j, "green");
+                animations.push([j, "green"]);
+            }
+        }
+        //swap smallest to index i
+        let temp = nums[i];
+        nums[i] = nums[minimumIndex];
+        nums[minimumIndex] = temp;
+        animations.push([i, minimumIndex]);
+        //add 1 swap
+        numSwaps++;
+        animations.push(["swap", numSwaps]);
+    }
+    reset(info);
 }
 
 //given a list of swaps [index, index], comparison/swaps [compare/swap, numberofcomp/swap] or color changes [index, color]

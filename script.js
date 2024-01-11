@@ -32,10 +32,6 @@ function createArr() {
 
 //sorts the bar graph
 function play() {
-    //quicksort(nums, 0, size - 1);
-    //bubbleSort(nums, size);
-    //selectionSort(nums, size);
-    //insertionSort(nums, size);
     getSortType();
     //sets all to black
     initStopwatch();
@@ -45,6 +41,11 @@ function play() {
 
 //resets sort to original
 function restartSort() {
+    var largeID = setTimeout(";");
+    for (var i = 0 ; i < largeID ; i++) {
+        clearTimeout(i); 
+    }
+    animations = [];
     nums = restart;
     copy = [...nums];
     restart = [...nums];
@@ -230,6 +231,7 @@ function bubbleSort(nums, size) {
             break;
         }
     }
+    animations.push([size - 1, "black"]);
 }
 
 //

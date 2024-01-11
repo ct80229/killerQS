@@ -34,7 +34,9 @@ function createArr() {
 function play() {
     //quicksort(nums, 0, size - 1);
     //bubbleSort(nums, size);
-    selectionSort(nums, size);
+    //selectionSort(nums, size);
+    //insertionSort(nums, size);
+    getSortType();
     //sets all to black
     initStopwatch();
     updateDisplay();
@@ -57,6 +59,15 @@ function restartSort() {
 function getSortType() {
     sortType = document.getElementById('types').value;
     console.log(sortType);
+    if (sortType == "quicksort") {
+        return quicksort(nums, 0, size - 1);
+    } else if (sortType == "selection") {
+        return selectionSort(nums, size);
+    } else if (sortType == "bubble") {
+        return bubbleSort(nums, size);
+    } else if (sortType == "insert") {
+        return insertionSort(nums, size);
+    }
 }
 
 //displays the bar graph to be sorted
@@ -270,6 +281,42 @@ function selectionSort(nums, size) {
     }
     reset(info);
 }
+
+//sorted array is at front, shift items back until they're in place
+function insertionSort(nums, size) {
+    var sortedNum;
+    var cur;
+    for (i = 1; i < size; i++) {
+        sortedNum = i - 1;
+        cur = nums[i];
+        //highlight cur
+        info.set(cur, "blue");
+        animations.push([cur, "blue"]);
+        //compare cur to each element on its left until an element that's smaller is found
+        while (sortedNum >= 0 && nums[sortedNum] > cur) {
+            nums[sortedNum + 1] = nums[sortedNum];
+            sortedNum--;
+        }
+        var copyI = i;
+        while (copyI != sortedNum + 1 && copyI - 1 >= 0) {
+            animations.push([copyI, copyI - 1]);
+            //make copyI - 1 blue, make copyI black
+            animations.push([copyI, "black"]);
+            animations.push([copyI - 1, "red"]);
+            copyI--;
+            //increase swaps, comps
+            numComparisons++;
+            animations.push(["compare",numComparisons]);
+            numSwaps++;
+            animations.push(["swap", numSwaps]);
+        }
+        nums[sortedNum + 1] = cur;
+        animations.push([sortedNum + 1, "green"]);
+        animations.push([sortedNum + 1, "black"]);
+    }
+    updateDisplay();
+}
+
 
 //given a list of swaps [index, index], comparison/swaps [compare/swap, numberofcomp/swap] or color changes [index, color]
 function animate(animations) {

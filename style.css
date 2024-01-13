@@ -25,3 +25,21 @@ body {
 #counters {
     margin-right: 50px;
 }
+
+.slidecontainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slideboxes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#buttons {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}

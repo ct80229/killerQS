@@ -14,6 +14,7 @@ var animations = [];
 var adversary = false;
 var curMin = 0;
 var counter = 0;
+var animationID = 0;
 
 //sets base color to black for all bars
 function reset(info) {
@@ -66,10 +67,7 @@ function play() {
 function restartSort() {
     curMin = 0;
     counter = 0;
-    var largeID = setTimeout(";");
-    for (var i = 0 ; i < largeID ; i++) {
-        clearTimeout(i); 
-    }
+    clearTimeout(animationID);
     animations = [];
     nums = restart;
     copy = [...nums];
@@ -395,7 +393,7 @@ function animate(animations) {
     const [index, colorOrNum, ide] = animations.shift();
     animateHelper(index, colorOrNum, ide);
     updateDisplay(info);
-    setTimeout(function() {animate(animations);}, delay);
+    animationID = setTimeout(function() {animate(animations);}, delay);
     
 }
 

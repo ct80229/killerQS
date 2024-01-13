@@ -13,6 +13,7 @@ reset(info);
 var animations = [];
 var adversary = false;
 var curMin = 0;
+var counter = 0;
 
 //sets base color to black for all bars
 function reset(info) {
@@ -81,14 +82,21 @@ function getSortType() {
     console.log(sortType);
     if (sortType == "quicksort") {
         toggleAdversary();
-        return quicksort(nums, 0, size - 1);
+        quicksort(nums, 0, size - 1);
+        if (adversary == true) {
+            animations.push([size - 1, getRandomBetween(curMin, 1), "setHeight"]);
+            animations.push([size - 1, "black", "setColor"]);
+        }
     } else if (sortType == "selection") {
+        adversary = false;
         removeAdversary();
         return selectionSort(nums, size);
     } else if (sortType == "bubble") {
+        adversary = false;
         removeAdversary();
         return bubbleSort(nums, size);
     } else if (sortType == "insert") {
+        adversary = false;
         removeAdversary();
         return insertionSort(nums, size);
     }
@@ -130,10 +138,8 @@ function quicksort(nums, start, end) {
             quicksort(nums, partition + 1, end);
         } else {
             let partition = adversaryHoarePartition(nums, start, end, 0);
-            quicksort(nums, start, partition,);
+            //quicksort(nums, start, partition);
             quicksort(nums, partition + 1, end);
-            animations.push([end, getRandomBetween(curMin, 1), "setHeight"])
-            animations.push([end, "black", "setColor"]);
         }
     }
 }
@@ -353,7 +359,6 @@ function adversarialqs() {
     adversary = true;
     createArr();
     updateDisplay();
-    console.log(adversary);
     for (i = 0; i < size; i++) {
         info.set(i, "gray");
     }
@@ -477,7 +482,8 @@ function adversaryHoarePartition(nums, start, end) {
 
     //set start bar height
     //animatinos.push[start, height]
-    let startBarHeight = getRandomBetween(curMin, 1);
+    counter++;
+    let startBarHeight = getRandomBetween(curMin, counter/size);
     curMin = startBarHeight;
     animations.push([start, startBarHeight, "setHeight"]);
     //sets start to green

@@ -12,6 +12,7 @@ var barSet;
 reset(info);
 var animations = [];
 var adversary = false;
+var curMin = 0;
 
 //sets base color to black for all bars
 function reset(info) {
@@ -52,6 +53,7 @@ function play() {
     getSortType();
     //sets all to black
     initStopwatch();
+    reset(info);
     updateDisplay();
     animate(animations);
 }
@@ -127,10 +129,11 @@ function quicksort(nums, start, end) {
             quicksort(nums, start, partition);
             quicksort(nums, partition + 1, end);
         } else {
-            let partition = adversaryHoarePartition(nums, start, end);
-            quicksort(nums, start, partition);
+            let partition = adversaryHoarePartition(nums, start, end, 0);
+            quicksort(nums, start, partition,);
             quicksort(nums, partition + 1, end);
-            animations.push([end, "black"]);
+            animations.push([end, getRandomBetween(curMin, 1), "setHeight"])
+            animations.push([end, "black", "setColor"]);
         }
     }
 }
@@ -141,7 +144,7 @@ function hoarePartition(nums, start, end) {
     let lPoint = start + 1;
     let rPoint = end;
     //var animations = [];
-    animations.push([start, "green"]);
+    animations.push([start, "green", "setColor"]);
 
     while (true) {
         //move left pointer
@@ -149,25 +152,25 @@ function hoarePartition(nums, start, end) {
             //change colors
             //set current index to red. set prev (-1) to black if it's red.
             info.set(lPoint, "red");
-            animations.push([lPoint, "red"]);
+            animations.push([lPoint, "red", "setColor"]);
             //if prev bar is in range, change to black
             if (lPoint - 1 >= 0 && info.get(lPoint - 1) == "red") {
                 info.set(lPoint - 1, "black");
-                animations.push([lPoint - 1, "black"]);
+                animations.push([lPoint - 1, "black", "setColor"]);
             }
             lPoint++;
             numComparisons++;
-            animations.push(["compare", numComparisons]);
+            animations.push(["compare", numComparisons, "compAdd"]);
         }
         //left pointer stops. set to blue
         if (lPoint >= 0 && lPoint <= end) {
             info.set(lPoint, "blue");
-            animations.push([lPoint, "blue"]);
+            animations.push([lPoint, "blue", "setColor"]);
         }
         //set behind to black if necessary.
         if (lPoint - 1 >= 0 && info.get(lPoint - 1) == "red") {
             info.set(lPoint - 1, "black");
-            animations.push([lPoint - 1, "black"]);
+            animations.push([lPoint - 1, "black", "setColor"]);
         }
 
         //move right pointer
@@ -175,46 +178,46 @@ function hoarePartition(nums, start, end) {
             //change colors
             //set current index to red. if prev(+1) is red, set to black
             info.set(rPoint, "red");
-            animations.push([rPoint, "red"]);
+            animations.push([rPoint, "red", "setColor"]);
             //if prev bar is in range, change to black
             if (rPoint + 1 <= end && info.get(rPoint + 1) == "red") {
                 info.set(rPoint + 1, "black");
-                animations.push([rPoint + 1, "black"]);
+                animations.push([rPoint + 1, "black", "setColor"]);
             }
             rPoint--;
             numComparisons++;
-            animations.push(["compare", numComparisons]);
+            animations.push(["compare", numComparisons], "compAdd");
         }
         //rPoint stops. set to blue.
         if (rPoint >= 0 && rPoint <= end) {
             info.set(rPoint, "blue");
-            animations.push([rPoint, "blue"]);
+            animations.push([rPoint, "blue", "setColor"]);
         }
         //set previous to black if necessary.
         if (rPoint + 1 <= end && info.get(rPoint + 1) == "red") {
             info.set(rPoint + 1, "black");
-            animations.push([rPoint + 1, "black"]);
+            animations.push([rPoint + 1, "black", "setColor"]);
         }
 
         if (lPoint < rPoint) {
             //swap, regular.
-            animations.push([lPoint, rPoint]);
+            animations.push([lPoint, rPoint, "swap"]);
             let temp = nums[lPoint];
             nums[lPoint] = nums[rPoint];
             nums[rPoint] = temp;
             info.set(start, "green");
-            animations.push([start, "green"]);
+            animations.push([start, "green", "setColor"]);
             numSwaps++;
             animations.push(["swap", numSwaps]);
         } else {
             //swap pivot with rPoint, end condition
-            animations.push([start, rPoint]);
+            animations.push([start, rPoint, "swap"]);
             let temp = pivot;
             nums[start] = nums[rPoint];
             nums[rPoint] = temp;
             reset(info);
             numSwaps++;
-            animations.push(["swap", numSwaps]);
+            animations.push(["swap", numSwaps, "swapAdd"]);
 
             //animate(animations);
             return rPoint;
@@ -228,11 +231,11 @@ function bubbleSort(nums, size) {
         let swapped = false;
         for (j = 0; j < size - i - 1; j++) {
             //make j, j + 1st index red
-            animations.push([j, "red"]);
-            animations.push([j + 1, "red"]);
+            animations.push([j, "red", "setColor"]);
+            animations.push([j + 1, "red"], "setColor");
             //add 1 comparison
             numComparisons++;
-            animations.push(["compare", numComparisons]);
+            animations.push(["compare", numComparisons, "compAdd"]);
             if (nums[j] > nums[j + 1]) {
                 //swap with larger element
                 let temp = nums[j];
@@ -240,15 +243,15 @@ function bubbleSort(nums, size) {
                 nums[j + 1] = temp;
                 swapped = true;
                 //turn both blue, then swap.
-                animations.push([j, "blue"]);
-                animations.push([j + 1, "blue"]);
-                animations.push([j, j + 1]);
+                animations.push([j, "blue", "setColor"]);
+                animations.push([j + 1, "blue", "setColor"]);
+                animations.push([j, j + 1, "swap"]);
                 //add 1 swap
                 numSwaps++;
-                animations.push(["swap", numSwaps]);
+                animations.push(["swap", numSwaps, "swapAdd"]);
             } else {
                 //turn j black.
-                animations.push([j, "black"]);
+                animations.push([j, "black", "setColor"]);
             }
         }
         if (swapped == false) {
@@ -263,46 +266,46 @@ function selectionSort(nums, size) {
         //index to swap is i, iterate throughout
         let minimumIndex = i;
         //set minimumIndex to green
-        animations.push([minimumIndex, "green"]);
+        animations.push([minimumIndex, "green", "setColor"]);
         for (j = minimumIndex + 1; j < size; j++) {
             //set j to red
             if (info.get(j) != "red") {
                 info.set(j, "red");
-                animations.push([j, "red"]);
+                animations.push([j, "red", "setColor"]);
             }
             //set previous j to black, if applicable
             if (j - 1 >= 0 && info.get(j - 1) == "red") {
                 info.set(j - 1, "black");
-                animations.push([j - 1, "black"]);
+                animations.push([j - 1, "black", "setColor"]);
             }
             //add 1 comparison
             numComparisons++;
-            animations.push(["compare", numComparisons]);
+            animations.push(["compare", numComparisons, "compAdd"]);
             if (nums[minimumIndex] > nums[j]) {
                 //set both to blue
-                info.set(minimumIndex, "blue");
+                info.set(minimumIndex, "blue", "setColor");
                 info.set(j, "blue");
-                animations.push([minimumIndex, "blue"]);
+                animations.push([minimumIndex, "blue", "setColor"]);
                 if (minimumIndex != j) {
-                    animations.push([j, "blue"]);
+                    animations.push([j, "blue", "setColor"]);
                 }
                 //set old minimum index to black
                 info.set(minimumIndex, "black");
-                animations.push([minimumIndex, "black"]);
+                animations.push([minimumIndex, "black", "setColor"]);
                 minimumIndex = j;
                 //set new minimum index to green
                 info.set(j, "green");
-                animations.push([j, "green"]);
+                animations.push([j, "green", "setColor"]);
             }
         }
         //swap smallest to index i
         let temp = nums[i];
         nums[i] = nums[minimumIndex];
         nums[minimumIndex] = temp;
-        animations.push([i, minimumIndex]);
+        animations.push([i, minimumIndex, "swap"]);
         //add 1 swap
         numSwaps++;
-        animations.push(["swap", numSwaps]);
+        animations.push(["swap", numSwaps, "swapAdd"]);
     }
     reset(info);
 }
@@ -316,7 +319,7 @@ function insertionSort(nums, size) {
         cur = nums[i];
         //highlight cur
         info.set(cur, "blue");
-        animations.push([cur, "blue"]);
+        animations.push([cur, "blue", "setColor"]);
         //compare cur to each element on its left until an element that's smaller is found
         while (sortedNum >= 0 && nums[sortedNum] > cur) {
             nums[sortedNum + 1] = nums[sortedNum];
@@ -324,20 +327,20 @@ function insertionSort(nums, size) {
         }
         var copyI = i;
         while (copyI != sortedNum + 1 && copyI - 1 >= 0) {
-            animations.push([copyI, copyI - 1]);
+            animations.push([copyI, copyI - 1, "swap"]);
             //make copyI - 1 blue, make copyI black
-            animations.push([copyI, "black"]);
-            animations.push([copyI - 1, "red"]);
+            animations.push([copyI, "black", "setColor"]);
+            animations.push([copyI - 1, "red", "setColor"]);
             copyI--;
             //increase swaps, comps
             numComparisons++;
-            animations.push(["compare",numComparisons]);
+            animations.push(["compare",numComparisons, "compAdd"]);
             numSwaps++;
-            animations.push(["swap", numSwaps]);
+            animations.push(["swap", numSwaps, "swapAdd"]);
         }
         nums[sortedNum + 1] = cur;
-        animations.push([sortedNum + 1, "green"]);
-        animations.push([sortedNum + 1, "black"]);
+        animations.push([sortedNum + 1, "green", "setColor"]);
+        animations.push([sortedNum + 1, "black", "setColor"]);
     }
     updateDisplay();
 }
@@ -362,30 +365,31 @@ function animate(animations) {
         endStopwatch();
         return;
     }
-    const [index, colorOrNum] = animations.shift();
+    const [index, colorOrNum, ide] = animations.shift();
+    animateHelper(index, colorOrNum, ide);
+    updateDisplay(info);
+    setTimeout(function() {animate(animations);}, delay);
+    
+}
+
+function animateHelper(index, colorOrNum, ide) {
     //if it's a index, color combo, then change info.
-    if (typeof colorOrNum === "string") {
+    if (ide == "setColor") {
         info.set(index, colorOrNum);
-    } else if (typeof index === "string") {
-        if (index == "compare") {
-            document.getElementById('numberOfComparisons').innerHTML = "Number of Comparisons: " + colorOrNum;
-        } else if (index == "swap") {
-            document.getElementById('numberOfSwaps').innerHTML = "Number of Swaps: " + colorOrNum;
-        }
-    } else if (typeof index === "number" && typeof colorOrNum === "number") {
+    } else if (ide == "swapAdd") {
+        document.getElementById('numberOfSwaps').innerHTML = "Number of Swaps: " + colorOrNum;
+    } else if (ide == "compAdd") {
+        document.getElementById('numberOfComparisons').innerHTML = "Number of Comparisons: " + colorOrNum;
+    } else if (ide == "swap") {
         //swap 
         let temp = copy[index];
         copy[index] = copy[colorOrNum];
         copy[colorOrNum] = temp;
         reset(info);
         updateDisplay();
-    } else {
-        //set bar height
-        index.style.height = colorOrNum * 100 + "%";
+    } else if (ide == "setHeight") {
+        copy[index] = colorOrNum;
     }
-    updateDisplay(info);
-    var animationLoop = setTimeout(function() {animate(animations);}, delay);
-    
 }
 
 
@@ -435,7 +439,8 @@ function updateSize() {
 
 //gets random number between max (exclusive) and min (inclusive)
 function getRandomBetween(min, max) {
-    return Math.random() * (max - min) + min;
+    let ans = Math.random();
+    return ans * (max - min) + min;
 }
 
 //toggles quicksort adversary animation button
@@ -462,25 +467,25 @@ function removeAdversary() {
 //hoare partitions, with gases and solids.
 //gas = gray. blue = set (stops moving during blah), red = moving, green = pivot, black = solid.
 //compare
-function adversaryHoarePartition(nums, start, end, curMin) {
+function adversaryHoarePartition(nums, start, end) {
     let pivot = nums[start];
     let lPoint = start + 1;
     let rPoint = end;
 
     //set start bar height
     //animatinos.push[start, height]
-    let startBar = barSet.get(start);
     let startBarHeight = getRandomBetween(curMin, 1);
-    animations.push([startBar, startBarHeight]);
+    curMin = startBarHeight;
+    animations.push([start, startBarHeight, "setHeight"]);
     //sets start to green
     info.set([start, "green"]);
-    animations.push([start, "green"]);
+    animations.push([start, "green", "setColor"]);
 
     while (true) {
         //set left pointer to blue
         if (lPoint >= 0 && lPoint <= end) {
             info.set(lPoint, "blue");
-            animations.push([lPoint, "blue"]);
+            animations.push([lPoint, "blue", "setColor"]);
         }
 
         //move right pointer
@@ -488,37 +493,32 @@ function adversaryHoarePartition(nums, start, end, curMin) {
             //set current index to red. if prev(+1) is red, set to black
             if (info.get(rPoint) != "blue") {
                 info.set(rPoint, "red");
-                animations.push([rPoint, "red"]);
+                animations.push([rPoint, "red", "setColor"]);
                 //if prev bar is in range, change to black
                 if (rPoint + 1 <= end && info.get(rPoint + 1) == "red") {
                     info.set(rPoint + 1, "gray");
-                    animations.push([rPoint + 1, "gray"]);
+                    animations.push([rPoint + 1, "gray", "setColor"]);
                 }
             }
             rPoint--;
             numComparisons++;
-            animations.push(["compare", numComparisons]);
+            animations.push(["compare", numComparisons, "compAdd"]);
         }
         //rPoint stops. set to blue.
         if (rPoint >= 0 && rPoint <= end) {
             info.set(rPoint, "blue");
-            animations.push([rPoint, "blue"]);
+            animations.push([rPoint, "blue", "setColor"]);
         }
-        //set previous to black if necessary.
-        /*if (rPoint + 1 <= end && info.get(rPoint + 1) == "red") {
-            info.set(rPoint + 1, "black");
-            animations.push([rPoint + 1, "black"]);
-        }*/
         //swap pivot with rPoint, end condition. rPoint = pivot. set pivot to green. set lPoint to blue
         info.set(rPoint, "green");
-        animations.push([rPoint, "green"]);
+        animations.push([rPoint, "green", "setColor"]);
         console.log(rPoint == start);
         info.set(lPoint, "gray");
-        animations.push([lPoint, "gray"]);
+        animations.push([lPoint, "gray", "setColor"]);
         info.set(rPoint, "black");
-        animations.push([rPoint, "black"]);
+        animations.push([rPoint, "black", "setColor"]);
         numSwaps++;
-        animations.push(["swap", numSwaps]);
+        animations.push(["swap", numSwaps, "swapAdd"]);
 
         //animate(animations);
         

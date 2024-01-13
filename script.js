@@ -1,4 +1,4 @@
-var size = 10;
+var size = 20;
 var delay = document.getElementById("speed").value * -1;
 var nums = [];
 var copy;

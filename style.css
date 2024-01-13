@@ -24,6 +24,11 @@ body {
     font-size: 10px;
 }
 
+.slideboxes {
+    font-family: generalsans;
+    font-size: 15px;
+}
+
 #container {
     height: 400px;
     display: flex;

@@ -8,23 +8,40 @@ var numComparisons = 0;
 var sortType = "quicksort";
 createArr();
 const info = new Map();
+var barSet;
 reset(info);
 var animations = [];
+var adversary = false;
 
 //sets base color to black for all bars
 function reset(info) {
+    var color;
+    if (adversary == false) {
+        color = "black";
+    } else {
+        color = "gray"
+    }
     for (i = 0; i < size; i++) {
-        info.set(i, "black");
+        info.set(i, color);
     }
 }
 
 //create bar graph to be sorted
 function createArr() {
+    if (adversary == null) {
+        adversary = false;
+    }
+    if (adversary == false) {
+        for (let i = 0; i < size; i++) {
+            nums[i] = Math.random();
+        }
+    } else {
+        for (let i = 0; i < size; i++) {
+            nums[i] = 0.5;
+        }
+    }
     numSwaps = 0;
     numComparisons = 0;
-    for (let i = 0; i < size; i++) {
-        nums[i] = Math.random();
-    }
     copy = [...nums]
     restart = [...nums]
     updateDisplay();
@@ -61,18 +78,23 @@ function getSortType() {
     sortType = document.getElementById('types').value;
     console.log(sortType);
     if (sortType == "quicksort") {
+        toggleAdversary();
         return quicksort(nums, 0, size - 1);
     } else if (sortType == "selection") {
+        removeAdversary();
         return selectionSort(nums, size);
     } else if (sortType == "bubble") {
+        removeAdversary();
         return bubbleSort(nums, size);
     } else if (sortType == "insert") {
+        removeAdversary();
         return insertionSort(nums, size);
     }
 }
 
 //displays the bar graph to be sorted
 function updateDisplay(info) {
+    barSet = new Map();
     container.innerHTML = "";
     for (let i = 0; i < size; i++) {
         const bar = document.createElement("div");
@@ -84,30 +106,32 @@ function updateDisplay(info) {
             //check i's color in info, set accordingly
             let curColor = info.get(i);
             setColor(curColor, bar);
+        } else if (adversary == true) {
+            setColor("gray", bar);
         }
+        barSet.set(i, bar);
         container.appendChild(bar);
     }
 }
 
 //set bar color
 function setColor(curColor, bar) {
-    if (curColor == "red") {
-        bar.style.backgroundColor = "red";
-    } else if (curColor == "black") {
-        bar.style.backgroundColor = "black";
-    } else if (curColor == "blue") {
-        bar.style.backgroundColor = "blue";
-    } else if (curColor == "green") {
-        bar.style.backgroundColor = "green";
-    }
+    bar.style.backgroundColor = curColor;
 }
 
 //standard quicksort, using hoare partitioning
 function quicksort(nums, start, end) {
     if (start < end) {
-        let partition = hoarePartition(nums, start, end);
-        quicksort(nums, start, partition);
-        quicksort(nums, partition + 1, end);
+        if (adversary == false) {
+            let partition = hoarePartition(nums, start, end);
+            quicksort(nums, start, partition);
+            quicksort(nums, partition + 1, end);
+        } else {
+            let partition = adversaryHoarePartition(nums, start, end);
+            quicksort(nums, start, partition);
+            quicksort(nums, partition + 1, end);
+            animations.push([end, "black"]);
+        }
     }
 }
 
@@ -231,7 +255,6 @@ function bubbleSort(nums, size) {
             break;
         }
     }
-    animations.push([size - 1, "black"]);
 }
 
 //
@@ -319,6 +342,19 @@ function insertionSort(nums, size) {
     updateDisplay();
 }
 
+//runs killer adversary to quicksort
+function adversarialqs() {
+    adversary = true;
+    createArr();
+    updateDisplay();
+    console.log(adversary);
+    for (i = 0; i < size; i++) {
+        info.set(i, "gray");
+    }
+    console.log(info.get(1));
+    //hoare, so pivot is furthest left.
+}
+
 
 //given a list of swaps [index, index], comparison/swaps [compare/swap, numberofcomp/swap] or color changes [index, color]
 function animate(animations) {
@@ -336,18 +372,19 @@ function animate(animations) {
         } else if (index == "swap") {
             document.getElementById('numberOfSwaps').innerHTML = "Number of Swaps: " + colorOrNum;
         }
-    } else {
+    } else if (typeof index === "number" && typeof colorOrNum === "number") {
         //swap 
         let temp = copy[index];
         copy[index] = copy[colorOrNum];
         copy[colorOrNum] = temp;
         reset(info);
         updateDisplay();
+    } else {
+        //set bar height
+        index.style.height = colorOrNum * 100 + "%";
     }
     updateDisplay(info);
-    setTimeout(function() {
-        animate(animations);
-    }, delay);
+    var animationLoop = setTimeout(function() {animate(animations);}, delay);
     
 }
 
@@ -381,12 +418,14 @@ function endStopwatch() {
     interval = null;
 }
 
+//changes speed w/ speed slider
 function updateSpeed() {
     delay = document.getElementById("speed").value * -1;
     //console.log(document.getElementById("speed").value);
     //console.log(delay);
 }
 
+//changes size w/ size slider
 function updateSize() {
     size = document.getElementById("size").value ;
     createArr();
@@ -394,6 +433,99 @@ function updateSize() {
     console.log(size);
 }
 
+//gets random number between max (exclusive) and min (inclusive)
+function getRandomBetween(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+//toggles quicksort adversary animation button
+function toggleAdversary() {
+    if (document.getElementById("adversary") == null) {
+        const killerQS = document.createElement('button');
+        killerQS.textContent = 'Click me!';
+        killerQS.setAttribute("id", "adversary");
+        killerQS.onclick = adversarialqs();
+        document.getElementById("buttons").appendChild(killerQS);
+    }
+}
+
+//removes the quicksort adversary button
+function removeAdversary() {
+    if (document.getElementById("adversary") != null) {
+        var button = document.getElementById("adversary");
+        document.getElementById("adversary").parentNode.removeChild(document.getElementById("adversary"));
+    }
+
+
+}
+
+//hoare partitions, with gases and solids.
+//gas = gray. blue = set (stops moving during blah), red = moving, green = pivot, black = solid.
+//compare
+function adversaryHoarePartition(nums, start, end, curMin) {
+    let pivot = nums[start];
+    let lPoint = start + 1;
+    let rPoint = end;
+
+    //set start bar height
+    //animatinos.push[start, height]
+    let startBar = barSet.get(start);
+    let startBarHeight = getRandomBetween(curMin, 1);
+    animations.push([startBar, startBarHeight]);
+    //sets start to green
+    info.set([start, "green"]);
+    animations.push([start, "green"]);
+
+    while (true) {
+        //set left pointer to blue
+        if (lPoint >= 0 && lPoint <= end) {
+            info.set(lPoint, "blue");
+            animations.push([lPoint, "blue"]);
+        }
+
+        //move right pointer
+        while (rPoint > start) {
+            //set current index to red. if prev(+1) is red, set to black
+            if (info.get(rPoint) != "blue") {
+                info.set(rPoint, "red");
+                animations.push([rPoint, "red"]);
+                //if prev bar is in range, change to black
+                if (rPoint + 1 <= end && info.get(rPoint + 1) == "red") {
+                    info.set(rPoint + 1, "gray");
+                    animations.push([rPoint + 1, "gray"]);
+                }
+            }
+            rPoint--;
+            numComparisons++;
+            animations.push(["compare", numComparisons]);
+        }
+        //rPoint stops. set to blue.
+        if (rPoint >= 0 && rPoint <= end) {
+            info.set(rPoint, "blue");
+            animations.push([rPoint, "blue"]);
+        }
+        //set previous to black if necessary.
+        /*if (rPoint + 1 <= end && info.get(rPoint + 1) == "red") {
+            info.set(rPoint + 1, "black");
+            animations.push([rPoint + 1, "black"]);
+        }*/
+        //swap pivot with rPoint, end condition. rPoint = pivot. set pivot to green. set lPoint to blue
+        info.set(rPoint, "green");
+        animations.push([rPoint, "green"]);
+        console.log(rPoint == start);
+        info.set(lPoint, "gray");
+        animations.push([lPoint, "gray"]);
+        info.set(rPoint, "black");
+        animations.push([rPoint, "black"]);
+        numSwaps++;
+        animations.push(["swap", numSwaps]);
+
+        //animate(animations);
+        
+        return rPoint;
+        
+    }
+}
 
 
     

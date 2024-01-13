@@ -11,15 +11,18 @@
     <hr>
 
     <div>
-        <select name="Sorts" id="types" onchange="getSortType()">
-            <option value="quicksort">Quick Sort</option>
-            <option value="selection">Selection Sort</option>
-            <option value="bubble">Bubble Sort</option>
-            <option value="insert">Insertion Sort</option>
-          </select>
-        <button onClick = "createArr()">Create</button>
-        <button onClick = "play()">Start</button>
-        <button onClick = "restartSort()">Reset</button>
+        <div id = "buttons">
+            <select name="Sorts" id="types" onchange="getSortType()">
+                <option value="quicksort">Quick Sort</option>
+                <option value="selection">Selection Sort</option>
+                <option value="bubble">Bubble Sort</option>
+                <option value="insert">Insertion Sort</option>
+              </select>
+            <button onClick = "createArr()">Create</button>
+            <button onClick = "play()">Start</button>
+            <button onClick = "restartSort()">Reset</button>
+            <button onClick = "adversarialqs()" id = "adversary" >Adversarial Sort</button>
+        </div>
         <div class="slidecontainer">
             <input type="range" min="1" max="50" value="10" class="slider" id="size"
             onchange="updateSize()" oninput="updateSize()">

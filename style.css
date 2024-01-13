@@ -28,7 +28,7 @@ body {
 
 .slidecontainer {
     display: flex;
-    align-items: center;
+    justify-content: center;
     gap: 10px;
 }
 
@@ -43,3 +43,7 @@ body {
     justify-content: center;
     gap: 5px;
 }
+
+input[type="range"] {
+    width:400px;
+  }

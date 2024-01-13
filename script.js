@@ -86,6 +86,7 @@ function getSortType() {
         sortType = document.getElementById('types').value;
     console.log(sortType);
     if (sortType == "quicksort") {
+        restartSort();
         curMin = 0;
         toggleAdversary();
         quicksort(nums, 0, size - 1);
@@ -469,22 +470,37 @@ function getRandomBetween(min, max) {
     return ans * (max - min) + min;
 }
 
-//toggles quicksort adversary animation button
+//toggles quicksort adversary animation button, add off button
 function toggleAdversary() {
     if (document.getElementById("adversary") == null) {
         const killerQS = document.createElement('button');
-        killerQS.textContent = 'Adversarial Sort!';
+        killerQS.textContent = 'Adversarial Sort';
         killerQS.setAttribute("id", "adversary");
         killerQS.onclick = adversarialqs;
         document.getElementById("buttons").appendChild(killerQS);
+
+        const off = document.createElement('button');
+        off.textContent = "Revert to Quick Sort";
+        off.setAttribute("id", "offButton");
+        off.onclick = revert;
+        document.getElementById("buttons").appendChild(off);
     }
 }
+//only used during quicksort, reverts to regular quicksort.
+function revert() {
+    console.log("used");
+    adversary = false;
+    createArr();
+    updateDisplay();
+}
 
-//removes the quicksort adversary button
+//removes the quicksort adversary button, removes off button
 function removeAdversary() {
     if (document.getElementById("adversary") != null) {
-        var button = document.getElementById("adversary");
-        document.getElementById("adversary").parentNode.removeChild(document.getElementById("adversary"));
+        var adButton = document.getElementById("adversary");
+        adButton.parentNode.removeChild(adButton);
+        var offB = document.getElementById("offButton");
+        offB.parentNode.removeChild(offB);
     }
 
 
@@ -539,7 +555,6 @@ function adversaryHoarePartition(nums, start, end) {
         //swap pivot with rPoint, end condition. rPoint = pivot. set pivot to green. set lPoint to blue
         info.set(rPoint, "green");
         animations.push([rPoint, "green", "setColor"]);
-        console.log(rPoint == start);
         info.set(lPoint, "gray");
         animations.push([lPoint, "gray", "setColor"]);
         info.set(rPoint, "black");
@@ -550,9 +565,9 @@ function adversaryHoarePartition(nums, start, end) {
         //animate(animations);
         
         return rPoint;
-        
     }
 }
+
 
 
     

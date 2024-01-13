@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <h1>Sorting Visualizer</h1>
+    <h1 class = head>Sorting Visualizer</h1>
     <div id = "container"></div>
     <hr>
 
@@ -22,6 +22,8 @@
             <button onClick = "play()">Start</button>
             <button onClick = "restartSort()">Reset</button>
             <button onClick = "adversarialqs()" id = "adversary" >Adversarial Sort</button>
+            <button onClick = "revert()" id = "offButton" >Revert to Quick Sort</button>
+
         </div>
         <div class = slidecontainer>
             <div class = slideboxes>
@@ -29,7 +31,7 @@
                     <p>Size:</p>
                 </div>
                 <div class="slide">
-                    <input type="range" min="1" max="50" value="10" class="slider" id="size"
+                    <input type="range" min="1" max="60" value="10" class="slider" id="size"
                     onchange="updateSize()" oninput="updateSize()">
                   </div>
             </div>
@@ -40,7 +42,7 @@
                     <p>Speed:</p>
                 </div>
                   <div class="slide">
-                    <input type="range" min="-300" max="-10" value="-50" class="slider" id="speed"
+                    <input type="range" min="-300" max="-1" value="-50" class="slider" id="speed"
                     onchange="updateSpeed()" oninput="updateSpeed()">
                   </div>
             </div>
@@ -48,8 +50,8 @@
         
     </div>
 
-    <div id = "tester">
-        <div id = "counters">
+    <div class = "tester">
+        <div class = "counters">
             <h1 id = "numberOfComparisons">Number of Comparisons: 0</h1>
             <h1 id = "numberOfSwaps">Number of Swaps: 0</h1>
             <h1 id = "timer">Time: 00:00:00</h1>

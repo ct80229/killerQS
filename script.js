@@ -258,6 +258,9 @@ function bubbleSort(nums, size) {
             break;
         }
     }
+    for (i = 0; i < size; i++) {
+        animations.push([i, "black", "setColor"]);
+    }
 }
 
 //

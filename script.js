@@ -68,6 +68,7 @@ function restartSort() {
     curMin = 0;
     counter = 0;
     clearTimeout(animationID);
+    endStopwatch();
     animations = [];
     nums = restart;
     copy = [...nums];

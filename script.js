@@ -51,6 +51,9 @@ function createArr() {
 
 //sorts the bar graph
 function play() {
+    curMin = 0; 
+    counter = 0;
+    animations.length = 0;
     getSortType();
     //sets all to black
     initStopwatch();
@@ -61,6 +64,8 @@ function play() {
 
 //resets sort to original
 function restartSort() {
+    curMin = 0;
+    counter = 0;
     var largeID = setTimeout(";");
     for (var i = 0 ; i < largeID ; i++) {
         clearTimeout(i); 
@@ -78,9 +83,10 @@ function restartSort() {
 }
 
 function getSortType() {
-    sortType = document.getElementById('types').value;
+        sortType = document.getElementById('types').value;
     console.log(sortType);
     if (sortType == "quicksort") {
+        curMin = 0;
         toggleAdversary();
         quicksort(nums, 0, size - 1);
         if (adversary == true) {
@@ -88,15 +94,27 @@ function getSortType() {
             animations.push([size - 1, "black", "setColor"]);
         }
     } else if (sortType == "selection") {
-        adversary = false;
+        if (adversary == true) {
+            adversary = false;
+            createArr();
+        }
         removeAdversary();
+        restartSort();
         return selectionSort(nums, size);
     } else if (sortType == "bubble") {
-        adversary = false;
+        if (adversary == true) {
+            adversary = false;
+            createArr();
+        }
         removeAdversary();
+        restartSort();
         return bubbleSort(nums, size);
     } else if (sortType == "insert") {
-        adversary = false;
+        if (adversary == true) {
+            adversary = false;
+            createArr();
+        }
+        restartSort();
         removeAdversary();
         return insertionSort(nums, size);
     }
@@ -455,9 +473,9 @@ function getRandomBetween(min, max) {
 function toggleAdversary() {
     if (document.getElementById("adversary") == null) {
         const killerQS = document.createElement('button');
-        killerQS.textContent = 'Click me!';
+        killerQS.textContent = 'Adversarial Sort!';
         killerQS.setAttribute("id", "adversary");
-        killerQS.onclick = adversarialqs();
+        killerQS.onclick = adversarialqs;
         document.getElementById("buttons").appendChild(killerQS);
     }
 }
